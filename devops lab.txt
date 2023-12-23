@@ -1,0 +1,157 @@
+Installation of jenkins
+--------------------------
+yum install git
+git --version
+browse-jenkins installation
+first link
+linux----fedora
+execute all commands
+browse jdk 17 for linux instance
+first link
+execute jdk for amazon 17
+yum install jenkins
+jenkins --version
+add inbound rule
+copy ip and port execute in browser then jenkins page will open so copy the path and execute in mobaxstrem by the commad
+cat and paste the path
+then password will generate so paste in jenkins so it will redirect.
+then customise the login details and finish.
+
+Integration of eclipse with github
+-----------------------------------
+open eclipse:new,maven project,internal,quickstart(console)/web(webapplication),next,artifactid:same name as repository name in github,finish.
+right click,team,share project,use or create,select project,create repo,finish.
+right click,team,commit,drag and drop,commit and push,push head.
+create repository in github same name as project name(artifactid)
+copy url and paste
+give username and password
+password as personal access token(90 days valid)
+token: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
+now maven project is pushed into github
+
+Integration of github with jenkins
+------------------------------------
+In jenkins
+dashboard,manage jenkins,plugins,available plugins,github integration,install.
+open eclipse:new,maven project,internal,quickstart(console)/web(webapplication),next,artifactid:same name as repository name in github,finish.
+right click,team,share project,use or create,select project,create repo,finish.
+right click,team,commit,drag and drop,commit and push,push head.
+create repository in github same name as project name(artifactid)
+copy url and paste
+give username and password
+password as personal access token
+now maven project is pushed into github
+open jenkins and create new item same name as repository name.
+source code manager give repo url
+repo browser as githubweb and paste repo url without extension
+apply,save,build now.
+
+
+Integration of maven with jenkins
+----------------------------------
+Installing maven framework
+---------------------------
+browse maven download open first link, copy link address of bin tar gz file.
+wget paste url,tar -xzvf paste output url,mv same url without extension maven,cd maven,cd bin,./mvn -v,cd ~,find / -name jvm
+copy the path and move to that path,then copy .x86_64, and use in JAVA_HOME.
+add 3 variables
+M2=/opt/maven/bin
+M2_HOME=/opt/maven
+JAVA_HOME=jdk path
+PATH=$PATH:$HOME/bin:$JAVA_HOME:$M2_HOME:$M2
+export PATH
+
+Installing maven plugin in jenkins
+----------------------------------
+open jenkins
+dashboard,manage jenkins,plugins,available plugins,maven integration,install.
+setting path:manage jenkins,tools,add jdk:java-17,JAVA_HOME:same which given,add maven:uncheck check box Maven-3.9.5,maven-home:/opt/maven
+pull maven project to github and from there pull to jenkins
+dashboard,new,same name,maven project,ok,repo url,repo url without extension, goals and options:clean install,apply,save,build.
+
+
+
+Tomcat Server
+----------------
+sudo su -
+browse jdk 17 for aws linux instance
+execute the command
+browse apache tomcat 9 and copy binary .tar file
+wget paste
+tar -xzvf path
+mv same url without extension tomcat,cd tomcat,cd bin,./startup.sh
+public ip and port number,manager app,it shows error,find / -name context.xml
+comments value tag in manager,host-manager.
+it asks username and password, cd .. ,so go to cd conf,vi tomcat-users.xml
+add 4 rolename and 1 username
+then in tomcat login with that credentials(username:admin,password:admin)
+in jenkins install a plugin named as deploy to container.
+then create a maven project add servlet dependency and push to github and then create a maven project in jenkins
+in post build actions select deploy war/ear to container and write **/*.war
+add container version 9.x give credentials and url of tomcat upto port number.
+
+installing docker
+-------------------
+yum install docker -y
+service docker start
+
+giving credentials
+--------------------
+useradd dockeradmin
+passwd dockeradmin
+
+permissions
+---------------
+usermod -aG docker dockeradmin
+cd \etc
+cd \ssh
+vi sshd_conf
+password authentication yes
+service sshd reload
+
+in jenkins installing plugins
+----------------------------
+publish over ssh plugin install
+system ssh server 
+name:docker
+hostname:dockerprivate ip
+username:
+advanced checkbox password:
+post build actions
+build
+
+creating directory
+--------------------
+cd /opt
+mkdir docker
+chown -R dockeradmin:dockeradmin docker
+
+cd ~
+
+content in Dockerfile
+----------------------
+vi Dockerfile
+FROM tomcat
+RUN cp -R /usr/local/tomcat/webapps.dist/* /usr/local/tomcat/webapps
+COPY ./*.war /usr/local/tomcat/webapps
+
+mv Dockerfile /opt/docker
+cd /opt/docker
+chown -R dockeradmin:dockeradmin /opt/docker
+
+in jenkins
+--------------
+remote directory
+//opt//docker
+
+
+exce cmds
+------------
+cd /opt/docker
+docker build -t myimage .
+docker stop mycontainer
+docker rm mycontainer
+docker run -d --name mycontainer -p 8083:8080 myimage
+
+
+
